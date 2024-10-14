@@ -1,3 +1,5 @@
 numpy
 Pillow
 PyQt5
+tensorflow
+matplotlib
