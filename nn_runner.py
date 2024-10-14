@@ -38,7 +38,7 @@ class DrawingApp(QWidget):
         # Set up the drawing variables
         self.image = QImage(400, 300, QImage.Format_RGB32)  # Fixed base image size
         self.image.fill(QColor(50, 50, 50))  # Dark gray background
-        self.drawing_area_color = QColor(100, 100, 100)  # Light gray drawing area
+        self.drawing_area_color = QColor(0, 0, 0)  # Light gray drawing area
         self.drawing = False
         self.last_point = QPoint()
 
@@ -82,7 +82,7 @@ class DrawingApp(QWidget):
         scaled_pos = self.scale_mouse_position(event.pos())
         if self.drawing and self.is_in_drawing_area(scaled_pos):
             painter = QPainter(self.image)
-            pen = QPen(QColor(230, 230, 230), 10, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)  # Black drawing color
+            pen = QPen(QColor(255, 255, 255), 10, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)  # Black drawing color
             painter.setPen(pen)
             painter.drawLine(self.last_point, scaled_pos)
             self.last_point = scaled_pos
