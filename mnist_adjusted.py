@@ -16,7 +16,7 @@ x_test = x_test.astype('float32') / 255.0
 
 # Augment the data using ImageDataGenerator
 datagen = ImageDataGenerator(
-    rotation_range=22,        # Rotate images by 15 degrees
+    rotation_range=15,        # Rotate images by 15 degrees
     width_shift_range=0.1,    # Shift images horizontally by 10%
     height_shift_range=0.1,   # Shift images vertically by 10%
     shear_range=0.1,          # Shearing transformation
