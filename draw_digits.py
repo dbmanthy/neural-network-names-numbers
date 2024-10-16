@@ -1,13 +1,19 @@
 import sys
+import pickle
 from PyQt5.QtWidgets import QApplication, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QSizePolicy
 from PyQt5.QtGui import QImage, QPainter, QPen, QColor
 from PyQt5.QtCore import Qt, QPoint
 from PIL import Image
 import numpy as np
 
+from nn.dense import Dense
+from nn.activations import Tanh
+from nn.network import train, predict
+
 class DrawingApp(QWidget):
-    def __init__(self):
+    def __init__(self, model):
         super().__init__()
+        self.model = model
 
         self.setWindowTitle("Digit Classifier with PyQt5")
         self.canvas_width, self.canvas_height = 280, 280  # You can change this to other multiples of 28
@@ -92,9 +98,13 @@ class DrawingApp(QWidget):
         # Resize for classification (28x28 for MNIST-like model)
         img_array = np.array(pil_image.resize((28, 28))) / 255.0
 
+         # Flatten the image array to pass into the model (from 28x28 to 784)
+        img_array = img_array.flatten().reshape(784, 1)  # Flatten and reshape to (784, 1)
+
+
         # Placeholder: here you'd pass img_array to the neural network for classification
-        print(f"Image array shape: {img_array.shape}")
-        print(img_array)
+        output = predict(model, img_array)
+        print('pred:', np.argmax(output))
 
         # For now, save the processed image as a reference
         pil_image_resized = Image.fromarray((img_array * 255).astype(np.uint8))
@@ -108,8 +118,31 @@ class DrawingApp(QWidget):
         canvas_y = int((pos.y() - 20) * self.canvas_height / (widget_height - 40))
         return QPoint(canvas_x, canvas_y)
 
+def load_model(filename='model.pkl'):
+    # Load the saved weights and biases
+    with open(filename, 'rb') as f:
+        params = pickle.load(f)
+
+    # Rebuild the network by inferring the architecture from the parameter shapes
+    network = []
+    for weights, biases in params:
+        input_size = weights.shape[1]  # Infer input size from the weight matrix
+        output_size = weights.shape[0]  # Infer output size from the weight matrix
+        layer = Dense(input_size, output_size)
+
+        # Assign loaded weights and biases to the layer
+        layer.weights, layer.biases = weights, biases
+        network.append(layer)
+
+        # Add activation function (assuming each Dense layer is followed by Tanh)
+        network.append(Tanh())
+
+    print(f"Model loaded from {filename}")
+    return network
+
 if __name__ == "__main__":
+    model = load_model()
     app = QApplication(sys.argv)
-    window = DrawingApp()
+    window = DrawingApp(model)
     window.show()
     sys.exit(app.exec_())

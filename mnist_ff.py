@@ -61,10 +61,10 @@ network = [
 # train
 train(network, mse, mse_prime, x_train, y_train, epochs=100, learning_rate=0.1)
 
-save_model(network, 'my_trained_model.pkl')
+save_model(network, 'model.pkl')
 
 # Load the model (e.g., in a new session or after retraining)
-load_model(network, 'my_trained_model.pkl')
+load_model(network, 'model.pkl')
 
 # test
 for x, y in zip(x_test, y_test):
